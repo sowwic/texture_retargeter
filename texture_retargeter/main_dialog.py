@@ -13,15 +13,7 @@ def maya_main_window():
 class MainDialog(QtWidgets.QDialog):
 
     INSTANCE = None  # type: MainDialog
-
-    def __init__(self, parent=maya_main_window()):
-        super(MainDialog, self).__init__(parent)
-
-        self.setWindowTitle("Texture retargeter")
-        self.create_widgets()
-        self.create_layouts()
-        self.create_connections()
-        self.update_nodes_list()
+    GEOMETRY = None
 
     @classmethod
     def display(cls):
@@ -32,6 +24,18 @@ class MainDialog(QtWidgets.QDialog):
         else:
             cls.INSTANCE.raise_()
             cls.INSTANCE.activateWindow()
+
+    def __init__(self, parent=maya_main_window()):
+        super(MainDialog, self).__init__(parent)
+        self.setWindowTitle("Texture retargeter")
+        self.setProperty("saveWindowPref", True)
+        # Init ui
+        self.create_widgets()
+        self.create_layouts()
+        self.create_connections()
+        # Post init
+        self.update_nodes_list()
+        self.restoreGeometry(MainDialog.GEOMETRY)
 
     def create_widgets(self):
         self.new_dir_widget = DirectoryWidget(default_dir="", label="Path:")
@@ -126,6 +130,10 @@ class DirectoryWidget(QtWidgets.QGroupBox):
         path = QtWidgets.QFileDialog.getExistingDirectory(self, self.browse_title, self.line_edit.text())
         if path:
             self.line_edit.setText(path)
+
+    def closeEvent(self, event):
+        MainDialog.GEOMETRY = self.saveGeometry()
+        super(MainDialog, self).closeEvent(event)
 
 
 if __name__ == "__main__":
