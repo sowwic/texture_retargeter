@@ -1,0 +1,1 @@
+from texture_retargeter.main_dialog import MainDialog
