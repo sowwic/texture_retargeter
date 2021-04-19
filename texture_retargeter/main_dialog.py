@@ -7,7 +7,11 @@ from shiboken2 import wrapInstance
 
 def maya_main_window():
     main_window_ptr = pma.MQtUtil_mainWindow()
-    return wrapInstance(long(main_window_ptr), QtWidgets.QWidget)  # noqa: F821
+    if os.sys.version_info[0] < 3:
+        result = wrapInstance(long(main_window_ptr), QtWidgets.QWidget)  # noqa: F821
+    else:
+        result = wrapInstance(int(main_window_ptr), QtWidgets.QWidget)
+    return result
 
 
 class MainDialog(QtWidgets.QDialog):
